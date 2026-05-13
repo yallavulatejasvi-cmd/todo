@@ -5,38 +5,37 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="app">
+    <h1>Priority Flow To-Do</h1>
 
-<div class="app">
-  <h1>Priority Flow To-Do</h1>
+    <div class="task-form">
+      <input id="taskInput" type="text" placeholder="Main task">
+      <input id="dateInput" type="date">
+      <input id="timeInput" type="time">
 
-  <div class="task-form">
-    <input id="taskInput" type="text" placeholder="Main task">
-    <input id="dateInput" type="date">
-    <input id="timeInput" type="time">
+      <select id="priorityInput">
+        <option value="1">High Priority</option>
+        <option value="2">Medium Priority</option>
+        <option value="3">Low Priority</option>
+      </select>
 
-    <select id="priorityInput">
-      <option value="1">High Priority</option>
-      <option value="2">Medium Priority</option>
-      <option value="3">Low Priority</option>
-    </select>
+      <h3>Subtasks</h3>
 
-    <h3>Subtasks</h3>
-
-    <div id="subtaskInputs">
-      <div class="subtask-row">
-        <input class="subtask-name" type="text" placeholder="Subtask">
-        <input class="subtask-date" type="date">
-        <input class="subtask-time" type="time">
+      <div id="subtaskInputs">
+        <div class="subtask-row">
+          <input class="subtask-name" type="text" placeholder="Subtask">
+          <input class="subtask-date" type="date">
+          <input class="subtask-time" type="time">
+        </div>
       </div>
+
+      <button onclick="addSubtaskInput()">Add Another Subtask</button>
+      <button onclick="addTask()">Add Main Task</button>
     </div>
 
-    <button type="button" onclick="addSubtaskInput()">Add Another Subtask</button>
-    <button type="button" onclick="addTask()">Add Main Task</button>
+    <div id="flowBoard" class="flow-board"></div>
   </div>
 
-  <div id="flowBoard" class="flow-board"></div>
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
