@@ -13,6 +13,11 @@ function addSubtaskInput() {
 
   row.innerHTML = `
     <input class="subtask-name" type="text" placeholder="Subtask">
+    <select class="subtask-priority">
+      <option value="1">High</option>
+      <option value="2">Medium</option>
+      <option value="3">Low</option>
+    </select>
     <input class="subtask-date" type="date">
     <input class="subtask-time" type="time">
   `;
@@ -21,12 +26,7 @@ function addSubtaskInput() {
 }
 
 function addTask() {
-  const taskInput = document.getElementById("taskInput");
-  const dateInput = document.getElementById("dateInput");
-  const timeInput = document.getElementById("timeInput");
-  const priorityInput = document.getElementById("priorityInput");
-
-  const title = taskInput.value.trim();
+  const title = document.getElementById("taskInput").value.trim();
 
   if (title === "") {
     alert("Enter a main task");
@@ -38,6 +38,7 @@ function addTask() {
       return {
         id: Date.now() + Math.random(),
         name: row.querySelector(".subtask-name").value.trim(),
+        priority: Number(row.querySelector(".subtask-priority").value),
         date: row.querySelector(".subtask-date").value,
         time: row.querySelector(".subtask-time").value,
         status: "should-start"
@@ -45,12 +46,14 @@ function addTask() {
     })
     .filter(subtask => subtask.name !== "");
 
+  subtasks.sort((a, b) => a.priority - b.priority);
+
   const task = {
     id: Date.now(),
     title: title,
-    date: dateInput.value,
-    time: timeInput.value,
-    priority: Number(priorityInput.value),
+    date: document.getElementById("dateInput").value,
+    time: document.getElementById("timeInput").value,
+    priority: Number(document.getElementById("priorityInput").value),
     status: "should-start",
     subtasks: subtasks
   };
@@ -71,6 +74,19 @@ function sortTasks() {
     const dateB = new Date(`${b.date || "9999-12-31"}T${b.time || "23:59"}`);
 
     return dateA - dateB;
+  });
+
+  tasks.forEach(task => {
+    task.subtasks.sort((a, b) => {
+      if (a.priority !== b.priority) {
+        return a.priority - b.priority;
+      }
+
+      const dateA = new Date(`${a.date || "9999-12-31"}T${a.time || "23:59"}`);
+      const dateB = new Date(`${b.date || "9999-12-31"}T${b.time || "23:59"}`);
+
+      return dateA - dateB;
+    });
   });
 }
 
@@ -114,13 +130,8 @@ function getTaskStatus(task) {
   const doneCount = task.subtasks.filter(subtask => subtask.status === "done").length;
   const progressCount = task.subtasks.filter(subtask => subtask.status === "in-progress").length;
 
-  if (doneCount === task.subtasks.length) {
-    return "done";
-  }
-
-  if (doneCount > 0 || progressCount > 0) {
-    return "in-progress";
-  }
+  if (doneCount === task.subtasks.length) return "done";
+  if (doneCount > 0 || progressCount > 0) return "in-progress";
 
   return "should-start";
 }
@@ -151,21 +162,27 @@ function getPriorityClass(priority) {
   return "priority-low";
 }
 
+function getCardPriorityClass(priority) {
+  if (priority === 1) return "high";
+  if (priority === 2) return "medium";
+  return "low";
+}
+
+function getSubtaskPriorityClass(priority) {
+  if (priority === 1) return "subtask-high";
+  if (priority === 2) return "subtask-medium";
+  return "subtask-low";
+}
+
 function displayTasks() {
   const board = document.getElementById("flowBoard");
   board.innerHTML = "";
 
   tasks.forEach(task => {
     const card = document.createElement("div");
-
-    const priorityClass =
-      task.priority === 1 ? "high" :
-      task.priority === 2 ? "medium" :
-      "low";
-
     const taskStatus = getTaskStatus(task);
 
-    card.className = "task-card " + priorityClass;
+    card.className = `task-card ${getCardPriorityClass(task.priority)}`;
 
     card.innerHTML = `
       <div class="task-header">
@@ -173,24 +190,31 @@ function displayTasks() {
         <div class="priority-pill ${getPriorityClass(task.priority)}">${getPriorityText(task.priority)}</div>
       </div>
 
+      <div class="edit-row">
+        <strong>Change Task Priority:</strong>
+        <select onchange="changeTaskPriority(${task.id}, this.value)">
+          <option value="1" ${task.priority === 1 ? "selected" : ""}>High Priority</option>
+          <option value="2" ${task.priority === 2 ? "selected" : ""}>Medium Priority</option>
+          <option value="3" ${task.priority === 3 ? "selected" : ""}>Low Priority</option>
+        </select>
+      </div>
+
       <div class="date-boxes">
         <div class="date-box">
           <div class="date-label">Date</div>
           <div class="date-value">${formatDate(task.date)}</div>
         </div>
-
         <div class="date-box">
           <div class="date-label">Day</div>
           <div class="date-value">${getDay(task.date)}</div>
         </div>
-
         <div class="date-box">
           <div class="date-label">Time</div>
           <div class="date-value">${formatTime(task.time)}</div>
         </div>
       </div>
 
-      <span class="task-status">Task Status: ${getStatusText(taskStatus)}</span>
+      <span class="status-pill ${getPriorityClass(task.priority)}">Task Status: ${getStatusText(taskStatus)}</span>
 
       <div class="status-row">
         <button class="status-btn ${getActiveClass(taskStatus, "should-start")}" onclick="setTaskStatus(${task.id}, 'should-start')">Should Start</button>
@@ -204,20 +228,29 @@ function displayTasks() {
         ${
           task.subtasks.length > 0
             ? task.subtasks.map(subtask => `
-              <li>
+              <li class="${getSubtaskPriorityClass(subtask.priority)}">
                 <div class="subtask-name-display">${subtask.name}</div>
+
+                <div class="edit-row">
+                  <strong>Subtask Priority:</strong>
+                  <select onchange="changeSubtaskPriority(${task.id}, ${subtask.id}, this.value)">
+                    <option value="1" ${subtask.priority === 1 ? "selected" : ""}>High</option>
+                    <option value="2" ${subtask.priority === 2 ? "selected" : ""}>Medium</option>
+                    <option value="3" ${subtask.priority === 3 ? "selected" : ""}>Low</option>
+                  </select>
+
+                  <span class="priority-pill ${getPriorityClass(subtask.priority)}">${getPriorityText(subtask.priority)}</span>
+                </div>
 
                 <div class="subtask-date-grid">
                   <div class="subtask-date-box">
                     <div class="date-label">Date</div>
                     <div>${formatDate(subtask.date)}</div>
                   </div>
-
                   <div class="subtask-date-box">
                     <div class="date-label">Day</div>
                     <div>${getDay(subtask.date)}</div>
                   </div>
-
                   <div class="subtask-date-box">
                     <div class="date-label">Time</div>
                     <div>${formatTime(subtask.time)}</div>
@@ -240,6 +273,27 @@ function displayTasks() {
 
     board.appendChild(card);
   });
+}
+
+function changeTaskPriority(taskId, priority) {
+  const task = tasks.find(task => task.id === taskId);
+  if (!task) return;
+
+  task.priority = Number(priority);
+  sortTasks();
+  displayTasks();
+}
+
+function changeSubtaskPriority(taskId, subtaskId, priority) {
+  const task = tasks.find(task => task.id === taskId);
+  if (!task) return;
+
+  const subtask = task.subtasks.find(subtask => subtask.id === subtaskId);
+  if (!subtask) return;
+
+  subtask.priority = Number(priority);
+  sortTasks();
+  displayTasks();
 }
 
 function setTaskStatus(taskId, status) {
@@ -284,6 +338,11 @@ function clearForm() {
   document.getElementById("subtaskInputs").innerHTML = `
     <div class="subtask-row">
       <input class="subtask-name" type="text" placeholder="Subtask">
+      <select class="subtask-priority">
+        <option value="1">High</option>
+        <option value="2">Medium</option>
+        <option value="3">Low</option>
+      </select>
       <input class="subtask-date" type="date">
       <input class="subtask-time" type="time">
     </div>
