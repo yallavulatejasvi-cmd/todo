@@ -1,14 +1,29 @@
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let tasks = JSON.parse(localStorage.getItem("todoTasks")) || [];
+let savedTheme = localStorage.getItem("todoTheme") || "theme-sunset";
 
-displayTasks();
+document.addEventListener("DOMContentLoaded", function () {
+  document.body.className = savedTheme;
+
+  const themeSelect = document.getElementById("themeSelect");
+  if (themeSelect) {
+    themeSelect.value = savedTheme;
+  }
+
+  displayTasks();
+});
 
 function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
+  localStorage.setItem("todoTasks", JSON.stringify(tasks));
+}
+
+function saveTheme(theme) {
+  localStorage.setItem("todoTheme", theme);
 }
 
 function changeTheme() {
   const selectedTheme = document.getElementById("themeSelect").value;
   document.body.className = selectedTheme;
+  saveTheme(selectedTheme);
 }
 
 function addSubtaskInput() {
@@ -40,24 +55,26 @@ function addTask() {
   }
 
   const subtasks = Array.from(document.querySelectorAll(".subtask-row"))
-    .map(row => ({
-      id: Date.now() + Math.random(),
-      name: row.querySelector(".subtask-name").value.trim(),
-      priority: Number(row.querySelector(".subtask-priority").value),
-      date: row.querySelector(".subtask-date").value,
-      time: row.querySelector(".subtask-time").value,
-      status: "should-start"
-    }))
+    .map(row => {
+      return {
+        id: Date.now() + Math.random(),
+        name: row.querySelector(".subtask-name").value.trim(),
+        priority: Number(row.querySelector(".subtask-priority").value),
+        date: row.querySelector(".subtask-date").value,
+        time: row.querySelector(".subtask-time").value,
+        status: "should-start"
+      };
+    })
     .filter(subtask => subtask.name !== "");
 
   const task = {
     id: Date.now(),
-    title,
+    title: title,
     date: document.getElementById("dateInput").value,
     time: document.getElementById("timeInput").value,
     priority: Number(document.getElementById("priorityInput").value),
     status: "should-start",
-    subtasks
+    subtasks: subtasks
   };
 
   tasks.push(task);
@@ -68,12 +85,12 @@ function addTask() {
 }
 
 function addSubtaskToExistingTask(taskId) {
-  const name = prompt("Enter subtask name:");
+  const name = prompt("Subtask name:");
   if (!name || name.trim() === "") return;
 
-  const date = prompt("Enter date as YYYY-MM-DD, or leave blank:");
-  const time = prompt("Enter time as HH:MM, or leave blank:");
-  const priority = prompt("Priority: 1 = High, 2 = Medium, 3 = Low") || "2";
+  const priority = prompt("Priority: 1 = High, 2 = Medium, 3 = Low", "2") || "2";
+  const date = prompt("Date: YYYY-MM-DD", "") || "";
+  const time = prompt("Time: HH:MM", "") || "";
 
   const task = tasks.find(task => task.id === taskId);
   if (!task) return;
@@ -82,8 +99,8 @@ function addSubtaskToExistingTask(taskId) {
     id: Date.now() + Math.random(),
     name: name.trim(),
     priority: Number(priority),
-    date: date || "",
-    time: time || "",
+    date: date,
+    time: time,
     status: "should-start"
   });
 
@@ -94,7 +111,9 @@ function addSubtaskToExistingTask(taskId) {
 
 function sortTasks() {
   tasks.sort((a, b) => {
-    if (a.priority !== b.priority) return a.priority - b.priority;
+    if (a.priority !== b.priority) {
+      return a.priority - b.priority;
+    }
 
     const dateA = new Date(`${a.date || "9999-12-31"}T${a.time || "23:59"}`);
     const dateB = new Date(`${b.date || "9999-12-31"}T${b.time || "23:59"}`);
@@ -104,7 +123,9 @@ function sortTasks() {
 
   tasks.forEach(task => {
     task.subtasks.sort((a, b) => {
-      if (a.priority !== b.priority) return a.priority - b.priority;
+      if (a.priority !== b.priority) {
+        return a.priority - b.priority;
+      }
 
       const dateA = new Date(`${a.date || "9999-12-31"}T${a.time || "23:59"}`);
       const dateB = new Date(`${b.date || "9999-12-31"}T${b.time || "23:59"}`);
@@ -116,6 +137,7 @@ function sortTasks() {
 
 function formatDate(date) {
   if (!date) return "No date";
+
   return new Date(date + "T00:00:00").toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -125,6 +147,7 @@ function formatDate(date) {
 
 function getDay(date) {
   if (!date) return "No day";
+
   return new Date(date + "T00:00:00").toLocaleDateString("en-US", {
     weekday: "long"
   });
@@ -145,13 +168,20 @@ function formatTime(time) {
 }
 
 function getTaskStatus(task) {
-  if (task.subtasks.length === 0) return task.status;
+  if (task.subtasks.length === 0) {
+    return task.status;
+  }
 
   const doneCount = task.subtasks.filter(subtask => subtask.status === "done").length;
   const progressCount = task.subtasks.filter(subtask => subtask.status === "in-progress").length;
 
-  if (doneCount === task.subtasks.length) return "done";
-  if (doneCount > 0 || progressCount > 0) return "in-progress";
+  if (doneCount === task.subtasks.length) {
+    return "done";
+  }
+
+  if (doneCount > 0 || progressCount > 0) {
+    return "in-progress";
+  }
 
   return "should-start";
 }
@@ -164,6 +194,7 @@ function getStatusText(status) {
 
 function getActiveClass(status, buttonStatus) {
   if (status !== buttonStatus) return "";
+
   if (buttonStatus === "should-start") return "active-start";
   if (buttonStatus === "in-progress") return "active-progress";
   return "active-done";
@@ -222,10 +253,12 @@ function displayTasks() {
           <div class="date-label">Date</div>
           <div class="date-value">${formatDate(task.date)}</div>
         </div>
+
         <div class="date-box">
           <div class="date-label">Day</div>
           <div class="date-value">${getDay(task.date)}</div>
         </div>
+
         <div class="date-box">
           <div class="date-label">Time</div>
           <div class="date-value">${formatTime(task.time)}</div>
@@ -240,7 +273,7 @@ function displayTasks() {
         <button class="status-btn ${getActiveClass(taskStatus, "done")}" onclick="setTaskStatus(${task.id}, 'done')">Done</button>
       </div>
 
-      <button onclick="addSubtaskToExistingTask(${task.id})">+ Add Subtask</button>
+      <button class="small-btn" onclick="addSubtaskToExistingTask(${task.id})">+ Add Subtask</button>
 
       <ul class="subtask-list">
         ${
@@ -255,6 +288,7 @@ function displayTasks() {
                     <option value="2" ${subtask.priority === 2 ? "selected" : ""}>Medium</option>
                     <option value="3" ${subtask.priority === 3 ? "selected" : ""}>Low</option>
                   </select>
+
                   <span class="priority-pill ${getPriorityClass(subtask.priority)}">${getPriorityText(subtask.priority)}</span>
                 </div>
 
@@ -263,10 +297,12 @@ function displayTasks() {
                     <div class="date-label">Date</div>
                     <div>${formatDate(subtask.date)}</div>
                   </div>
+
                   <div class="subtask-date-box">
                     <div class="date-label">Day</div>
                     <div>${getDay(subtask.date)}</div>
                   </div>
+
                   <div class="subtask-date-box">
                     <div class="date-label">Time</div>
                     <div>${formatTime(subtask.time)}</div>
