@@ -4,20 +4,41 @@
   <title>Priority Flow To-Do</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="theme-sunset">
+
   <div class="app">
-    <h1>Priority Flow To-Do</h1>
+    <div class="top-bar">
+      <div>
+        <h1>Priority Flow To-Do</h1>
+        <p class="subtitle">Plan tasks, subtasks, deadlines, and progress clearly.</p>
+      </div>
+
+      <div class="theme-box">
+        <label>Theme</label>
+        <select id="themeSelect" onchange="changeTheme()">
+          <option value="theme-sunset">Sunset</option>
+          <option value="theme-mint">Mint</option>
+          <option value="theme-lavender">Lavender</option>
+          <option value="theme-dark">Dark</option>
+        </select>
+      </div>
+    </div>
 
     <div class="task-form">
-      <input id="taskInput" type="text" placeholder="Main task">
-      <input id="dateInput" type="date">
-      <input id="timeInput" type="time">
+      <h2>Add New Task</h2>
 
-      <select id="priorityInput">
-        <option value="1">High Priority</option>
-        <option value="2">Medium Priority</option>
-        <option value="3">Low Priority</option>
-      </select>
+      <div class="form-grid">
+        <input id="taskInput" type="text" placeholder="Main task">
+
+        <select id="priorityInput">
+          <option value="1">High Priority</option>
+          <option value="2">Medium Priority</option>
+          <option value="3">Low Priority</option>
+        </select>
+
+        <input id="dateInput" type="date">
+        <input id="timeInput" type="time">
+      </div>
 
       <h3>Subtasks</h3>
 
@@ -29,8 +50,10 @@
         </div>
       </div>
 
-      <button onclick="addSubtaskInput()">Add Another Subtask</button>
-      <button onclick="addTask()">Add Main Task</button>
+      <div class="form-buttons">
+        <button onclick="addSubtaskInput()">+ Add Subtask</button>
+        <button onclick="addTask()">Add Main Task</button>
+      </div>
     </div>
 
     <div id="flowBoard" class="flow-board"></div>
