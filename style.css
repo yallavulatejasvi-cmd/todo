@@ -6,7 +6,7 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: Arial, sans-serif;
-  padding: 22px;
+  padding: 16px;
   transition: 0.3s;
 }
 
@@ -66,7 +66,7 @@ body {
 }
 
 .app {
-  max-width: 1400px;
+  max-width: 1500px;
   margin: auto;
 }
 
@@ -74,18 +74,18 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
-  gap: 16px;
+  margin-bottom: 12px;
+  gap: 12px;
 }
 
 h1 {
-  font-size: 34px;
-  margin: 0 0 4px;
+  font-size: 28px;
+  margin: 0;
 }
 
 .subtitle {
-  margin: 0;
-  font-size: 14px;
+  margin: 2px 0 0;
+  font-size: 12px;
   font-weight: bold;
   opacity: 0.8;
 }
@@ -95,8 +95,8 @@ h1 {
 .task-card {
   background: var(--card);
   color: #111827;
-  border-radius: 18px;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.13);
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
 }
 
 .theme-midnight .theme-box,
@@ -106,40 +106,42 @@ h1 {
 }
 
 .theme-box {
-  padding: 12px;
+  padding: 8px;
 }
 
 .theme-box label {
   display: block;
+  font-size: 11px;
   font-weight: bold;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .task-form {
   background: var(--form);
-  padding: 16px;
-  margin-bottom: 24px;
+  padding: 12px;
+  margin-bottom: 16px;
   border: 2px solid var(--accent);
 }
 
 .task-form h2,
 .task-form h3 {
-  margin: 8px 0;
+  margin: 4px 0 8px;
+  font-size: 16px;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 9px;
+  gap: 7px;
 }
 
 input,
 select,
 button {
-  padding: 10px;
-  border-radius: 10px;
+  padding: 8px;
+  border-radius: 8px;
   border: 1px solid #d1d5db;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 button {
@@ -150,72 +152,66 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  opacity: 0.85;
-}
-
 .subtask-row {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 9px;
-  margin-bottom: 8px;
+  gap: 7px;
+  margin-bottom: 6px;
 }
 
 .form-buttons {
   display: flex;
-  gap: 9px;
-  margin-top: 12px;
+  gap: 7px;
+  margin-top: 8px;
 }
 
 .flow-board {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(4, minmax(260px, 1fr));
+  gap: 12px;
   align-items: start;
 }
 
 .task-card {
-  padding: 14px;
-  border-top: 7px solid var(--accent);
-  transition: 0.2s;
-}
-
-.task-card:hover {
-  transform: translateY(-3px);
+  padding: 10px;
+  border-top: 5px solid var(--accent);
+  min-height: 220px;
 }
 
 .high {
-  border-left: 8px solid #ef4444;
+  border-left: 6px solid #ef4444;
 }
 
 .medium {
-  border-left: 8px solid #f59e0b;
+  border-left: 6px solid #f59e0b;
 }
 
 .low {
-  border-left: 8px solid #22c55e;
+  border-left: 6px solid #22c55e;
 }
 
 .task-header {
   display: flex;
   justify-content: space-between;
   align-items: start;
-  gap: 10px;
+  gap: 6px;
+  margin-bottom: 5px;
 }
 
 .task-title {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: bold;
+  line-height: 1.2;
 }
 
 .priority-pill,
 .status-pill {
-  padding: 5px 8px;
+  padding: 4px 6px;
   border-radius: 999px;
   font-weight: bold;
   color: white;
-  font-size: 11px;
-  display: inline-block;
+  font-size: 9px;
+  white-space: nowrap;
 }
 
 .priority-high {
@@ -234,56 +230,58 @@ button:hover {
 .subtask-date-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 7px;
-  margin: 9px 0;
+  gap: 5px;
+  margin: 6px 0;
 }
 
 .date-box,
 .subtask-date-box {
   background: var(--soft);
-  padding: 7px;
-  border-radius: 10px;
+  padding: 5px;
+  border-radius: 7px;
   border: 1px solid rgba(0,0,0,0.08);
 }
 
 .date-label {
-  font-size: 9px;
+  font-size: 8px;
   text-transform: uppercase;
   opacity: 0.7;
   font-weight: bold;
 }
 
 .date-value {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bold;
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
 .edit-row {
   display: flex;
-  gap: 8px;
+  gap: 5px;
   align-items: center;
   flex-wrap: wrap;
-  margin: 8px 0;
+  margin: 5px 0;
 }
 
 .edit-row select {
-  max-width: 145px;
+  max-width: 110px;
+  padding: 5px;
+  font-size: 10px;
 }
 
 .status-row {
   display: flex;
-  gap: 7px;
+  gap: 5px;
   flex-wrap: wrap;
-  margin: 8px 0;
+  margin: 6px 0;
 }
 
 .status-btn {
   background: var(--soft);
   color: #111827;
   border: 1px solid #d1d5db;
-  padding: 6px 8px;
-  font-size: 11px;
+  padding: 5px 6px;
+  font-size: 9px;
 }
 
 .active-start {
@@ -303,16 +301,18 @@ button:hover {
 
 .subtask-list {
   padding-left: 0;
-  margin-top: 10px;
+  margin-top: 6px;
+  max-height: 180px;
+  overflow-y: auto;
 }
 
 .subtask-list li {
   list-style: none;
   background: var(--soft);
-  border-left: 6px solid var(--accent);
-  padding: 8px;
-  border-radius: 12px;
-  margin-bottom: 7px;
+  border-left: 4px solid var(--accent);
+  padding: 6px;
+  border-radius: 8px;
+  margin-bottom: 5px;
 }
 
 .subtask-high {
@@ -328,35 +328,51 @@ button:hover {
 }
 
 .subtask-name-display {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: bold;
 }
 
 .small-btn {
-  padding: 6px 8px;
-  font-size: 11px;
+  padding: 5px 7px;
+  font-size: 10px;
 }
 
 .delete-btn {
-  margin-top: 10px;
+  margin-top: 6px;
   background: #991b1b;
+  padding: 6px 8px;
+  font-size: 10px;
+}
+
+@media (max-width: 1200px) {
+  .flow-board {
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+  }
 }
 
 @media (max-width: 900px) {
+  .flow-board {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+
+  .form-grid,
+  .subtask-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
   .top-bar,
   .form-buttons {
     flex-direction: column;
     align-items: stretch;
   }
 
+  .flow-board,
   .form-grid,
   .subtask-row,
   .date-boxes,
   .subtask-date-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .flow-board {
     grid-template-columns: 1fr;
   }
 }
