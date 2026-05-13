@@ -1,5 +1,10 @@
 let tasks = [];
 
+function changeTheme() {
+  const selectedTheme = document.getElementById("themeSelect").value;
+  document.body.className = selectedTheme;
+}
+
 function addSubtaskInput() {
   const subtaskInputs = document.getElementById("subtaskInputs");
 
@@ -28,9 +33,7 @@ function addTask() {
     return;
   }
 
-  const subtaskRows = document.querySelectorAll(".subtask-row");
-
-  const subtasks = Array.from(subtaskRows)
+  const subtasks = Array.from(document.querySelectorAll(".subtask-row"))
     .map(row => {
       return {
         id: Date.now() + Math.random(),
@@ -71,6 +74,38 @@ function sortTasks() {
   });
 }
 
+function formatDate(date) {
+  if (!date) return "No date";
+
+  return new Date(date + "T00:00:00").toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
+}
+
+function getDay(date) {
+  if (!date) return "No day";
+
+  return new Date(date + "T00:00:00").toLocaleDateString("en-US", {
+    weekday: "long"
+  });
+}
+
+function formatTime(time) {
+  if (!time) return "No time";
+
+  const [hours, minutes] = time.split(":");
+  const date = new Date();
+  date.setHours(hours);
+  date.setMinutes(minutes);
+
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit"
+  });
+}
+
 function getTaskStatus(task) {
   if (task.subtasks.length === 0) {
     return task.status;
@@ -104,6 +139,18 @@ function getActiveClass(status, buttonStatus) {
   return "active-done";
 }
 
+function getPriorityText(priority) {
+  if (priority === 1) return "High Priority";
+  if (priority === 2) return "Medium Priority";
+  return "Low Priority";
+}
+
+function getPriorityClass(priority) {
+  if (priority === 1) return "priority-high";
+  if (priority === 2) return "priority-medium";
+  return "priority-low";
+}
+
 function displayTasks() {
   const board = document.getElementById("flowBoard");
   board.innerHTML = "";
@@ -116,24 +163,31 @@ function displayTasks() {
       task.priority === 2 ? "medium" :
       "low";
 
-    const priorityText =
-      task.priority === 1 ? "High Priority" :
-      task.priority === 2 ? "Medium Priority" :
-      "Low Priority";
-
     const taskStatus = getTaskStatus(task);
-
-    const day = task.date
-      ? new Date(task.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long" })
-      : "No day";
 
     card.className = "task-card " + priorityClass;
 
     card.innerHTML = `
-      <div class="task-title">${task.title}</div>
+      <div class="task-header">
+        <div class="task-title">${task.title}</div>
+        <div class="priority-pill ${getPriorityClass(task.priority)}">${getPriorityText(task.priority)}</div>
+      </div>
 
-      <div class="task-meta">
-        ${priorityText} | ${task.date || "No date"} | ${day} | ${task.time || "No time"}
+      <div class="date-boxes">
+        <div class="date-box">
+          <div class="date-label">Date</div>
+          <div class="date-value">${formatDate(task.date)}</div>
+        </div>
+
+        <div class="date-box">
+          <div class="date-label">Day</div>
+          <div class="date-value">${getDay(task.date)}</div>
+        </div>
+
+        <div class="date-box">
+          <div class="date-label">Time</div>
+          <div class="date-value">${formatTime(task.time)}</div>
+        </div>
       </div>
 
       <span class="task-status">Task Status: ${getStatusText(taskStatus)}</span>
@@ -144,33 +198,39 @@ function displayTasks() {
         <button class="status-btn ${getActiveClass(taskStatus, "done")}" onclick="setTaskStatus(${task.id}, 'done')">Done</button>
       </div>
 
-      <strong>Subtasks:</strong>
+      <strong>Subtasks</strong>
 
       <ul class="subtask-list">
         ${
           task.subtasks.length > 0
-            ? task.subtasks.map(subtask => {
-                const subtaskDay = subtask.date
-                  ? new Date(subtask.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long" })
-                  : "No day";
+            ? task.subtasks.map(subtask => `
+              <li>
+                <div class="subtask-name-display">${subtask.name}</div>
 
-                return `
-                  <li>
-                    <span class="subtask-name-display">${subtask.name}</span>
-                    <span class="subtask-date-display">
-                      Date: ${subtask.date || "No date"} |
-                      Day: ${subtaskDay} |
-                      Time: ${subtask.time || "No time"}
-                    </span>
+                <div class="subtask-date-grid">
+                  <div class="subtask-date-box">
+                    <div class="date-label">Date</div>
+                    <div>${formatDate(subtask.date)}</div>
+                  </div>
 
-                    <div class="status-row">
-                      <button class="status-btn ${getActiveClass(subtask.status, "should-start")}" onclick="setSubtaskStatus(${task.id}, ${subtask.id}, 'should-start')">Should Start</button>
-                      <button class="status-btn ${getActiveClass(subtask.status, "in-progress")}" onclick="setSubtaskStatus(${task.id}, ${subtask.id}, 'in-progress')">In Progress</button>
-                      <button class="status-btn ${getActiveClass(subtask.status, "done")}" onclick="setSubtaskStatus(${task.id}, ${subtask.id}, 'done')">Done</button>
-                    </div>
-                  </li>
-                `;
-              }).join("")
+                  <div class="subtask-date-box">
+                    <div class="date-label">Day</div>
+                    <div>${getDay(subtask.date)}</div>
+                  </div>
+
+                  <div class="subtask-date-box">
+                    <div class="date-label">Time</div>
+                    <div>${formatTime(subtask.time)}</div>
+                  </div>
+                </div>
+
+                <div class="status-row">
+                  <button class="status-btn ${getActiveClass(subtask.status, "should-start")}" onclick="setSubtaskStatus(${task.id}, ${subtask.id}, 'should-start')">Should Start</button>
+                  <button class="status-btn ${getActiveClass(subtask.status, "in-progress")}" onclick="setSubtaskStatus(${task.id}, ${subtask.id}, 'in-progress')">In Progress</button>
+                  <button class="status-btn ${getActiveClass(subtask.status, "done")}" onclick="setSubtaskStatus(${task.id}, ${subtask.id}, 'done')">Done</button>
+                </div>
+              </li>
+            `).join("")
             : "<li>No subtasks added</li>"
         }
       </ul>
@@ -184,7 +244,6 @@ function displayTasks() {
 
 function setTaskStatus(taskId, status) {
   const task = tasks.find(task => task.id === taskId);
-
   if (!task) return;
 
   task.status = status;
@@ -200,11 +259,9 @@ function setTaskStatus(taskId, status) {
 
 function setSubtaskStatus(taskId, subtaskId, status) {
   const task = tasks.find(task => task.id === taskId);
-
   if (!task) return;
 
   const subtask = task.subtasks.find(subtask => subtask.id === subtaskId);
-
   if (!subtask) return;
 
   subtask.status = status;
