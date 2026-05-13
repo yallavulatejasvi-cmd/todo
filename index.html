@@ -10,11 +10,11 @@
     <div class="top-bar">
       <div>
         <h1>Priority Flow To-Do</h1>
-        <p class="subtitle">Plan tasks, subtasks, deadlines, priority, and progress.</p>
+        <p class="subtitle">Tasks, subtasks, priority, dates, times, and progress.</p>
       </div>
 
       <div class="theme-box">
-        <label>Choose Theme</label>
+        <label>Theme</label>
         <select id="themeSelect" onchange="changeTheme()">
           <option value="theme-sunset">Sunset</option>
           <option value="theme-ocean">Ocean</option>
@@ -26,7 +26,7 @@
     </div>
 
     <div class="task-form">
-      <h2>Add New Task</h2>
+      <h2>Add Task</h2>
 
       <div class="form-grid">
         <input id="taskInput" type="text" placeholder="Main task">
@@ -57,8 +57,8 @@
       </div>
 
       <div class="form-buttons">
-        <button onclick="addSubtaskInput()">+ Add Subtask</button>
-        <button onclick="addTask()">Add Main Task</button>
+        <button onclick="addSubtaskInput()">+ Add Subtask Row</button>
+        <button onclick="addTask()">Add Task</button>
       </div>
     </div>
 
