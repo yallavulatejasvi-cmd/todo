@@ -7,51 +7,44 @@ function addTask() {
   const timeInput = document.getElementById("timeInput");
   const priorityInput = document.getElementById("priorityInput");
 
-  const taskText = taskInput.value.trim();
+  const title = taskInput.value.trim();
 
-  if (taskText === "") {
-    alert("Enter a main task");
+  if (title === "") {
+    alert("Enter a task");
     return;
   }
 
   const task = {
     id: Date.now(),
-    title: taskText,
+    title: title,
     subtasks: subtaskInput.value
       .split(",")
-      .map(item => item.trim())
-      .filter(item => item !== ""),
+      .map(subtask => subtask.trim())
+      .filter(subtask => subtask !== ""),
     date: dateInput.value,
     time: timeInput.value,
-    priority: Number(priorityInput.value),
-    completed: false
+    priority: Number(priorityInput.value)
   };
 
   tasks.push(task);
-  sortTasks();
-  renderTasks();
 
-  taskInput.value = "";
-  subtaskInput.value = "";
-  dateInput.value = "";
-  timeInput.value = "";
-  priorityInput.value = "1";
-}
-
-function sortTasks() {
   tasks.sort((a, b) => {
     if (a.priority !== b.priority) {
       return a.priority - b.priority;
     }
 
-    const dateA = new Date(`${a.date} ${a.time}`);
-    const dateB = new Date(`${b.date} ${b.time}`);
-
-    return dateA - dateB;
+    return new Date(a.date + "T" + a.time) - new Date(b.date + "T" + b.time);
   });
+
+  displayTasks();
+
+  taskInput.value = "";
+  subtaskInput.value = "";
+  dateInput.value = "";
+  timeInput.value = "";
 }
 
-function renderTasks() {
+function displayTasks() {
   const board = document.getElementById("flowBoard");
   board.innerHTML = "";
 
@@ -63,50 +56,35 @@ function renderTasks() {
       task.priority === 2 ? "medium" :
       "low";
 
-    card.className = `task-card ${priorityClass}`;
-
-    if (task.completed) {
-      card.classList.add("completed");
-    }
+    const priorityText =
+      task.priority === 1 ? "High Priority" :
+      task.priority === 2 ? "Medium Priority" :
+      "Low Priority";
 
     const day = task.date
       ? new Date(task.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long" })
       : "No day";
 
-    const priorityText =
-      task.priority === 1 ? "High" :
-      task.priority === 2 ? "Medium" :
-      "Low";
+    card.className = "task-card " + priorityClass;
 
     card.innerHTML = `
-      <div class="task-header">
-        <div class="task-title">${task.title}</div>
-        <div class="priority-label">${priorityText}</div>
+      <div class="task-title">${task.title}</div>
+
+      <div class="task-meta">
+        ${priorityText} | ${task.date || "No date"} | ${day} | ${task.time || "No time"}
       </div>
 
-      <div class="task-info">
-        Date: ${task.date || "No date"} |
-        Day: ${day} |
-        Time: ${task.time || "No time"}
-      </div>
-
-      <div class="subtasks">
+      <strong>Subtasks:</strong>
+      <ul class="subtask-list">
         ${
           task.subtasks.length > 0
-            ? task.subtasks.map(sub => `<span class="subtask">${sub}</span>`).join("")
-            : `<span class="subtask">No subtasks</span>`
+            ? task.subtasks.map(subtask => `<li>${subtask}</li>`).join("")
+            : "<li>No subtasks added</li>"
         }
-      </div>
+      </ul>
 
-      <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+      <button class="delete-btn" onclick="deleteTask(${task.id})">Delete Task</button>
     `;
-
-    card.addEventListener("click", function(event) {
-      if (event.target.tagName !== "BUTTON") {
-        task.completed = !task.completed;
-        renderTasks();
-      }
-    });
 
     board.appendChild(card);
   });
@@ -114,5 +92,5 @@ function renderTasks() {
 
 function deleteTask(id) {
   tasks = tasks.filter(task => task.id !== id);
-  renderTasks();
+  displayTasks();
 }
